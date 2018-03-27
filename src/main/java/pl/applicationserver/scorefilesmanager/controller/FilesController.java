@@ -32,11 +32,11 @@ public class FilesController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> upload(@RequestParam("file") MultipartFile multipartFile, @RequestPart SimpleFileInfo fileInfo) {
+    public ResponseEntity<AbstractFileMetadata> upload(@RequestParam("file") MultipartFile multipartFile, @RequestPart SimpleFileInfo fileInfo) {
         if (fileInfo != null && fileInfo.getTitleId() != null & fileInfo.getScoreFileType() != null) {
-            boolean uploaded = fileService.uploadFile(multipartFile, fileInfo);
-            if (uploaded) {
-                return new ResponseEntity<>(HttpStatus.CREATED);
+            AbstractFileMetadata uploadedFileMetadata = fileService.uploadFile(multipartFile, fileInfo);
+            if (uploadedFileMetadata != null) {
+                return new ResponseEntity<>(uploadedFileMetadata, HttpStatus.CREATED);
             }
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

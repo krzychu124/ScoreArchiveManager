@@ -36,7 +36,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public boolean uploadFile(MultipartFile file, SimpleFileInfo fileInfo) {
+    public AbstractFileMetadata uploadFile(MultipartFile file, SimpleFileInfo fileInfo) {
         String generateFileName = generateFileName();
         String filePath = generateFilePath(fileInfo.getScoreFileType(), generateFileName);
         String pathToDownload = storageService.upload(file, filePath);

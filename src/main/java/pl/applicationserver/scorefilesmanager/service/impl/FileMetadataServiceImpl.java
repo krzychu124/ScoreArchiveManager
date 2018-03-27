@@ -26,7 +26,7 @@ public class FileMetadataServiceImpl implements FileMetadataService {
     }
 
     @Override
-    public boolean createFileMetadata(SimpleFileInfo fileInfo, String fileName, Long fileSize, String pathToDownload, String fileExtension) {
+    public AbstractFileMetadata createFileMetadata(SimpleFileInfo fileInfo, String fileName, Long fileSize, String pathToDownload, String fileExtension) {
         ScoreTitle scoreTitle;
         Instrument instrument;
         ScoreType scoreType;
@@ -36,7 +36,7 @@ public class FileMetadataServiceImpl implements FileMetadataService {
             scoreType = scoreTypeService.getScoreType(fileInfo.getScoreTypeId());
         } catch (EntityNotFoundException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
         ScoreFileType fileType = fileInfo.getScoreFileType();
         AbstractFileMetadata fileMetadata = null;
@@ -55,7 +55,7 @@ public class FileMetadataServiceImpl implements FileMetadataService {
                 break;
         }
         fileRepository.save(fileMetadata);
-        return fileMetadata.getId() != null;
+        return fileMetadata;
     }
 
     @Override

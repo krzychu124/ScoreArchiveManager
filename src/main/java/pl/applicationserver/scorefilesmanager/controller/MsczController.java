@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
 import pl.applicationserver.scorefilesmanager.domain.PdfFileMetadata;
 import pl.applicationserver.scorefilesmanager.dto.SimpleFileInfo;
 import pl.applicationserver.scorefilesmanager.repository.AbstractFileRepository;
@@ -28,11 +29,11 @@ public class MsczController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> upload(@RequestParam("file") MultipartFile multipartFile, @RequestPart SimpleFileInfo fileInfo) {
+    public ResponseEntity<AbstractFileMetadata> upload(@RequestParam("file") MultipartFile multipartFile, @RequestPart SimpleFileInfo fileInfo) {
         if (fileInfo != null && fileInfo.getTitleId() != null & fileInfo.getScoreFileType() != null && fileInfo.getInstrumentId() != null) {
-            boolean uploaded = fileService.uploadFile(multipartFile, fileInfo);
-            if (uploaded) {
-                return new ResponseEntity<>(HttpStatus.CREATED);
+            AbstractFileMetadata uploadedFileMetadata = fileService.uploadFile(multipartFile, fileInfo);
+            if (uploadedFileMetadata != null) {
+                return new ResponseEntity<>(uploadedFileMetadata, HttpStatus.CREATED);
             }
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
