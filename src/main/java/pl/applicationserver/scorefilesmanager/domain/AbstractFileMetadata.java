@@ -1,10 +1,13 @@
 package pl.applicationserver.scorefilesmanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public abstract class AbstractFileMetadata {
 
     @Id
