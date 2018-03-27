@@ -9,6 +9,7 @@ import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Profile("serverStorage")
 @PropertySource("classpath:application.properties")
 public class DropboxStorageService implements StorageService{
 //TODO logger
