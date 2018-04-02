@@ -1,5 +1,7 @@
 package pl.applicationserver.scorefilesmanager.scheduler;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -18,6 +20,7 @@ import java.util.List;
 @EnableAsync
 @EnableScheduling
 public class PdfThumbnailGenerator {
+    private Logger logger = LogManager.getLogger(PdfThumbnailGenerator.class);
     private FileService fileService;
     private FileMetadataService fileMetadataService;
     private final List<SAFileMetadata> filesToGenerate = new ArrayList<>();
@@ -36,7 +39,7 @@ public class PdfThumbnailGenerator {
 
     @Scheduled(cron = "0 0/5 * * * ?")
     protected void generateThumbnails(){
-        System.out.println("Scheduled pdf thumbnail generator");
+        logger.info("Scheduled pdf thumbnail generator");
         List<SAFileMetadata> copiedList;
         synchronized (filesToGenerate) {
             copiedList = new ArrayList<>(filesToGenerate);
@@ -50,12 +53,12 @@ public class PdfThumbnailGenerator {
 
     public void findFilesToGenerateThumbs(){
         this.filesToGenerate.addAll(fileMetadataService.getFilesWithoutThumb(ScoreFileType.PDF));
-        System.out.println("Added " + filesToGenerate.size() + " files to thumbnail generator task");
+        logger.info("Added " + filesToGenerate.size() + " files to thumbnail generator task");
     }
 
     @Async
     protected void generateAndSave(SAFileMetadata fileMetadata) {
         fileService.generateThumbnail(fileMetadata.getFileName());
-        System.out.println("Generated thumb for fileName "+ fileMetadata.getFileName());
+        logger.info("Generated thumb for fileName "+ fileMetadata.getFileName());
     }
 }
