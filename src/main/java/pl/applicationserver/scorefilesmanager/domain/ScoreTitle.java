@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "sam_score_title")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ScoreTitle {
 

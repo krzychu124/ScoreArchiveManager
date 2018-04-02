@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Table(name = "sam_sa_file_metadata")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public abstract class AbstractFileMetadata {
+public class SAFileMetadata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
@@ -33,10 +34,13 @@ public abstract class AbstractFileMetadata {
     @NotNull
     @Enumerated
     private ScoreFileType scoreFileType;
-    @NotNull
-    private boolean deleted= false;
+    private String thumbnail;
 
-    AbstractFileMetadata(@NotNull String fileName, ScoreTitle scoreTitle, @NotNull ScoreType scoreType, Instrument instrument, @NotNull String url, @NotNull Long fileSize, String fileExtension, ScoreFileType scoreFileType) {
+    private LocalDateTime created;
+    @NotNull
+    private boolean deleted = false;
+
+    public SAFileMetadata(@NotNull String fileName, ScoreTitle scoreTitle, @NotNull ScoreType scoreType, Instrument instrument, @NotNull String url, @NotNull Long fileSize, String fileExtension, ScoreFileType scoreFileType) {
         this.fileName = fileName;
         this.scoreTitle = scoreTitle;
         this.scoreType = scoreType;
@@ -47,12 +51,32 @@ public abstract class AbstractFileMetadata {
         this.scoreFileType = scoreFileType;
     }
 
+    protected SAFileMetadata() {
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        created = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }
 
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     public String getFileName() {
@@ -135,7 +159,11 @@ public abstract class AbstractFileMetadata {
         this.deleted = deleted;
     }
 
-    public static String generateFileName(AbstractFileMetadata metadata){
-        return metadata.getScoreTitle().getTitle()+ metadata.getInstrument().getName() + "."+ metadata.getFileExtension();
+    public static String generateFileName(SAFileMetadata metadata) {
+        return metadata.getScoreTitle().getTitle() + metadata.getInstrument().getName() + "." + metadata.getFileExtension();
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
     }
 }

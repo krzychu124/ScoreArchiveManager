@@ -1,5 +1,6 @@
 package pl.applicationserver.scorefilesmanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.applicationserver.scorefilesmanager.domain.role.GrantedAuthorityImpl;
@@ -13,7 +14,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "archive_user")
+@Table(name = "sam_archive_user")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
 
     @Id
