@@ -12,7 +12,7 @@ public class DataSourceConfig {
 
     @Bean
     public BasicDataSource dataSource() throws URISyntaxException {
-        URI dbUri = new URI(System.getenv("DB_SCORE_ARCHIVE_URL"));
+        URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":").length>1 ?dbUri.getUserInfo().split(":")[1] : "";
