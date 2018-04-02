@@ -2,11 +2,8 @@ package pl.applicationserver.scorefilesmanager.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
+import org.springframework.web.bind.annotation.*;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 import pl.applicationserver.scorefilesmanager.domain.ScoreFileType;
 import pl.applicationserver.scorefilesmanager.service.FileMetadataService;
 
@@ -23,7 +20,13 @@ public class FIleMetadataController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AbstractFileMetadata>> getMetadataListByType(@RequestParam("fileType")ScoreFileType fileType) {
+    public ResponseEntity<List<SAFileMetadata>> getMetadataListByType(@RequestParam("fileType")ScoreFileType fileType) {
         return new ResponseEntity<>(fileMetadataService.getByType(fileType), HttpStatus.OK);
+    }
+
+    @GetMapping("/instrument/{id}")
+    public ResponseEntity<List<SAFileMetadata>> getAllByInstrument(@PathVariable("id") Long instrumentId) {
+        List<SAFileMetadata> files = fileMetadataService.getAllByInstrument(instrumentId);
+        return new ResponseEntity<>(files, HttpStatus.OK);
     }
 }

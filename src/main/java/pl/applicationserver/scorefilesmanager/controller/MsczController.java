@@ -8,10 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
-import pl.applicationserver.scorefilesmanager.domain.PdfFileMetadata;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 import pl.applicationserver.scorefilesmanager.dto.SimpleFileInfo;
-import pl.applicationserver.scorefilesmanager.repository.AbstractFileRepository;
+import pl.applicationserver.scorefilesmanager.repository.SAFileMetadataRepository;
 import pl.applicationserver.scorefilesmanager.service.FileService;
 
 @RestController
@@ -20,18 +19,18 @@ public class MsczController {
 
 
     private FileService fileService;
-    private AbstractFileRepository msczRepository;
+    private SAFileMetadataRepository msczRepository;
 
     @Autowired
-    public MsczController(FileService fileService, AbstractFileRepository msczRepository) {
+    public MsczController(FileService fileService, SAFileMetadataRepository msczRepository) {
         this.fileService = fileService;
         this.msczRepository = msczRepository;
     }
 
     @PostMapping
-    public ResponseEntity<AbstractFileMetadata> upload(@RequestParam("file") MultipartFile multipartFile, @RequestPart SimpleFileInfo fileInfo) {
+    public ResponseEntity<SAFileMetadata> upload(@RequestParam("file") MultipartFile multipartFile, @RequestPart SimpleFileInfo fileInfo) {
         if (fileInfo != null && fileInfo.getTitleId() != null & fileInfo.getScoreFileType() != null && fileInfo.getInstrumentId() != null) {
-            AbstractFileMetadata uploadedFileMetadata = fileService.uploadFile(multipartFile, fileInfo);
+            SAFileMetadata uploadedFileMetadata = fileService.uploadFile(multipartFile, fileInfo);
             if (uploadedFileMetadata != null) {
                 return new ResponseEntity<>(uploadedFileMetadata, HttpStatus.CREATED);
             }
@@ -42,7 +41,7 @@ public class MsczController {
     @GetMapping
     public ResponseEntity<Resource> download(@RequestBody String fileName) {
         if (fileName != null) {
-            PdfFileMetadata msczFile = (PdfFileMetadata) msczRepository.getByFileName(fileName);
+            SAFileMetadata msczFile = msczRepository.getByFileName(fileName);
             if (msczFile != null) {
                 Resource resource = fileService.downloadFile(fileName);
                 if (resource != null) {

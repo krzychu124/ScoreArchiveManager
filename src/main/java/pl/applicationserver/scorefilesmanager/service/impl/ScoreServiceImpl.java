@@ -11,7 +11,10 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,15 +25,17 @@ public class ScoreServiceImpl implements ScoreService {
     private InstrumentRepository instrumentRepository;
     private IAuthenticationFacade authenticationFacade;
     private ScoreTypeRepository scoreTypeRepository;
+    private SAFileMetadataRepository saFileMetadataRepository;
 
     @Autowired
-    public ScoreServiceImpl(ScoreRepository scoreRepository, UserRepository userRepository, ScoreTitleRepository scoreTitleRepository, InstrumentRepository instrumentRepository, IAuthenticationFacade authenticationFacade, ScoreTypeRepository scoreTypeRepository) {
+    public ScoreServiceImpl(ScoreRepository scoreRepository, UserRepository userRepository, ScoreTitleRepository scoreTitleRepository, InstrumentRepository instrumentRepository, IAuthenticationFacade authenticationFacade, ScoreTypeRepository scoreTypeRepository, SAFileMetadataRepository saFileMetadataRepository) {
         this.scoreRepository = scoreRepository;
         this.userRepository = userRepository;
         this.scoreTitleRepository = scoreTitleRepository;
         this.instrumentRepository = instrumentRepository;
         this.authenticationFacade = authenticationFacade;
         this.scoreTypeRepository = scoreTypeRepository;
+        this.saFileMetadataRepository = saFileMetadataRepository;
     }
 
     @Override
@@ -68,15 +73,32 @@ public class ScoreServiceImpl implements ScoreService {
     }
 
     @Override
+    @Transactional
     public Score createScore(Score score) {
         String userName = (String) authenticationFacade.getAuthentication().getPrincipal();
         User user = userRepository.getUserByName(userName);
         if (user != null) {
             user = userRepository.getOne(user.getId());
+            score.setInstrument(instrumentRepository.getOne(score.getInstrument().getId()));
+            score.setScoreType(scoreTypeRepository.getOne(score.getScoreType().getId()));
+            score.setScoreTitle(scoreTitleRepository.getOne(score.getScoreTitle().getId()));
+            score.setPdfFiles(new HashSet<>(saFileMetadataRepository.findAllById(score.getPdfFiles().stream().map(SAFileMetadata::getId).collect(Collectors.toSet()))));
+            score.setImageFiles(new HashSet<>(saFileMetadataRepository.findAllById(score.getImageFiles().stream().map(SAFileMetadata::getId).collect(Collectors.toSet()))));
+            score.setMuseScoreFiles(new HashSet<>(saFileMetadataRepository.findAllById(score.getMuseScoreFiles().stream().map(SAFileMetadata::getId).collect(Collectors.toSet()))));
+            score.setOtherFiles(new HashSet<>(saFileMetadataRepository.findAllById(score.getOtherFiles().stream().map(SAFileMetadata::getId).collect(Collectors.toSet()))));
             score.setCreatedBy(user);
             score.setLastModifiedBy(user);
             score.setLastModificationTime(Timestamp.from(Instant.now()));
-            return scoreRepository.save(score);
+            Score saved = scoreRepository.saveAndFlush(score);
+            saved.getPdfFiles().forEach(file -> file.setScoreId(saved.getId()));
+            saFileMetadataRepository.saveAll(saved.getPdfFiles());
+            saved.getMuseScoreFiles().forEach(file -> file.setScoreId(saved.getId()));
+            saFileMetadataRepository.saveAll(saved.getMuseScoreFiles());
+            saved.getImageFiles().forEach(file -> file.setScoreId(saved.getId()));
+            saFileMetadataRepository.saveAll(saved.getImageFiles());
+            saved.getOtherFiles().forEach(file -> file.setScoreId(saved.getId()));
+            saFileMetadataRepository.saveAll(saved.getOtherFiles());
+            return scoreRepository.saveAndFlush(saved);
         }
         return null;
     }
@@ -106,9 +128,22 @@ public class ScoreServiceImpl implements ScoreService {
             updated.getImageFiles().addAll(score.getImageFiles());
             updated.getMuseScoreFiles().addAll(score.getMuseScoreFiles());
             updated.getPdfFiles().addAll(score.getPdfFiles());
+            updated.getOtherFiles().addAll(score.getOtherFiles());
             updated.setScoreTitle(score.getScoreTitle());
             return scoreRepository.save(updated);
         }
         return null;
+    }
+
+    @Override
+    public void removePdfFromScore(Long id) {
+        SAFileMetadata file = saFileMetadataRepository.getOne(id);
+        Set<SAFileMetadata> set = new HashSet<>();
+        set.add(file);
+        List<Score> scores = scoreRepository.getScoresByPdfFilesIsContaining(set);
+        scores.forEach(score -> {
+            score.getPdfFiles().remove(file);
+            scoreRepository.save(score);
+        });
     }
 }

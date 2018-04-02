@@ -3,14 +3,11 @@ package pl.applicationserver.scorefilesmanager.service.impl;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 import pl.applicationserver.scorefilesmanager.service.StorageService;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,15 +39,9 @@ public class LocalTestStorageService implements StorageService{
     }
 
     @Override
-    public byte[] download(String filePath) {
-        try {
-            return Files.readAllBytes(Paths.get(filePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new byte[0];
+    public byte[] download(String filePath) throws IOException {
+        return Files.readAllBytes(Paths.get(filePath));
     }
-
     @Override
     public List<String> getFileList(String path) {
         List<String> files = new ArrayList<>();
@@ -64,7 +55,7 @@ public class LocalTestStorageService implements StorageService{
     }
 
     @Override
-    public boolean removePermanently(AbstractFileMetadata fileMetadata) {
+    public boolean removePermanently(SAFileMetadata fileMetadata) {
         if (Files.isRegularFile(Paths.get(fileMetadata.getUrl()))) {
             try {
                 Files.delete(Paths.get(fileMetadata.getUrl()));

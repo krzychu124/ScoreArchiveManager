@@ -8,10 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
-import pl.applicationserver.scorefilesmanager.domain.PdfFileMetadata;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 import pl.applicationserver.scorefilesmanager.dto.SimpleFileInfo;
-import pl.applicationserver.scorefilesmanager.repository.AbstractFileRepository;
+import pl.applicationserver.scorefilesmanager.repository.SAFileMetadataRepository;
 import pl.applicationserver.scorefilesmanager.service.FileService;
 
 
@@ -19,18 +18,18 @@ import pl.applicationserver.scorefilesmanager.service.FileService;
 @RequestMapping(value = "/pdf")
 public class PDFController {
     private FileService fileService;
-    private AbstractFileRepository pdfRepository;
+    private SAFileMetadataRepository pdfRepository;
 
     @Autowired
-    public PDFController(FileService fileService, AbstractFileRepository pdfRepository) {
+    public PDFController(FileService fileService, SAFileMetadataRepository pdfRepository) {
         this.fileService = fileService;
         this.pdfRepository = pdfRepository;
     }
 
     @PostMapping
-    public ResponseEntity<AbstractFileMetadata> upload(@RequestParam("file") MultipartFile multipartFile, @RequestPart SimpleFileInfo fileInfo) {
+    public ResponseEntity<SAFileMetadata> upload(@RequestParam("file") MultipartFile multipartFile, @RequestPart SimpleFileInfo fileInfo) {
         if (fileInfo != null && fileInfo.getTitleId() != null & fileInfo.getScoreFileType() != null) {
-            AbstractFileMetadata uploadedFileMetadata = fileService.uploadFile(multipartFile, fileInfo);
+            SAFileMetadata uploadedFileMetadata = fileService.uploadFile(multipartFile, fileInfo);
             if (uploadedFileMetadata != null) {
                 return new ResponseEntity<>(uploadedFileMetadata, HttpStatus.CREATED);
             }
@@ -41,12 +40,12 @@ public class PDFController {
     @GetMapping
     public ResponseEntity<Resource> download(@RequestParam("name") String fileName) {
         if (fileName != null) {
-            PdfFileMetadata pdfFile = (PdfFileMetadata) pdfRepository.getByFileName(fileName);
+            SAFileMetadata pdfFile = pdfRepository.getByFileName(fileName);
             if (pdfFile != null) {
                 Resource resource = fileService.downloadFile(fileName);
                 if (resource != null) {
                     HttpHeaders headers = new HttpHeaders();
-                    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename: " + AbstractFileMetadata.generateFileName(pdfFile));
+                    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename: " + SAFileMetadata.generateFileName(pdfFile));
                     return ResponseEntity.ok()
                             .headers(headers)
                             .contentLength(pdfFile.getFileSize())

@@ -5,16 +5,15 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 import pl.applicationserver.scorefilesmanager.domain.ScoreFileType;
 import pl.applicationserver.scorefilesmanager.dto.DownloadedFile;
 import pl.applicationserver.scorefilesmanager.dto.SimpleFileInfo;
-import pl.applicationserver.scorefilesmanager.repository.AbstractFileRepository;
-import pl.applicationserver.scorefilesmanager.service.ArchivedFileMetadataService;
-import pl.applicationserver.scorefilesmanager.service.FileMetadataService;
-import pl.applicationserver.scorefilesmanager.service.FileService;
-import pl.applicationserver.scorefilesmanager.service.StorageService;
+import pl.applicationserver.scorefilesmanager.repository.SAFileMetadataRepository;
+import pl.applicationserver.scorefilesmanager.service.*;
 
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -24,19 +23,23 @@ public class FileServiceImpl implements FileService {
     //TODO logger
     private StorageService storageService;
     private FileMetadataService fileMetadataService;
-    private AbstractFileRepository fileRepository;
+    private SAFileMetadataRepository fileRepository;
     private ArchivedFileMetadataService archivedFileMetadataService;
+    private ThumbnailCreatorService thumbnailCreatorService;
+    private ScoreService scoreService;
 
     @Autowired
-    public FileServiceImpl(StorageService storageService, FileMetadataService fileMetadataService, AbstractFileRepository fileRepository, ArchivedFileMetadataService archivedFileMetadataService) {
+    public FileServiceImpl(StorageService storageService, FileMetadataService fileMetadataService, SAFileMetadataRepository fileRepository, ArchivedFileMetadataService archivedFileMetadataService, ThumbnailCreatorService thumbnailCreatorService, ScoreService scoreService) {
         this.storageService = storageService;
         this.fileMetadataService = fileMetadataService;
         this.fileRepository = fileRepository;
         this.archivedFileMetadataService = archivedFileMetadataService;
+        this.thumbnailCreatorService = thumbnailCreatorService;
+        this.scoreService = scoreService;
     }
 
     @Override
-    public AbstractFileMetadata uploadFile(MultipartFile file, SimpleFileInfo fileInfo) {
+    public SAFileMetadata uploadFile(MultipartFile file, SimpleFileInfo fileInfo) {
         String generateFileName = generateFileName();
         String filePath = generateFilePath(fileInfo.getScoreFileType(), generateFileName);
         String pathToDownload = storageService.upload(file, filePath);
@@ -47,28 +50,28 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public Resource downloadFile(String fileName) {
-        AbstractFileMetadata file = fileRepository.getByFileName(fileName);
+        SAFileMetadata file = fileRepository.getByFileName(fileName);
         try {
             byte[] content = storageService.download(file.getUrl());
             return new ByteArrayResource(content);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.print("[Exception] IO Exception message" + e.getMessage());
         }
         return null;
     }
 
     @Override
     public DownloadedFile createDownloadedFile(String fileName) {
-        String fileInBase64= downloadFileBase64(fileName);
-        AbstractFileMetadata fileMetadata = fileMetadataService.get(fileName);
-        if(fileInBase64 != null && fileMetadata != null) {
+        String fileInBase64 = downloadFileBase64(fileName);
+        SAFileMetadata fileMetadata = fileMetadataService.get(fileName);
+        if (fileInBase64 != null && fileMetadata != null) {
             return new DownloadedFile(fileInBase64, fileMetadata);
         }
         return null;
     }
 
     private String downloadFileBase64(String fileName) {
-        AbstractFileMetadata file = fileRepository.getByFileName(fileName);
+        SAFileMetadata file = fileRepository.getByFileName(fileName);
         try {
             byte[] content = storageService.download(file.getUrl());
             return Base64.getEncoder().encodeToString(content);
@@ -81,7 +84,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public boolean removeFile(String fileName) {
         try {
-            AbstractFileMetadata file = fileRepository.getByFileName(fileName);
+            SAFileMetadata file = fileRepository.getByFileName(fileName);
             file.setDeleted(true);
             fileRepository.save(file);
             return true;
@@ -97,19 +100,34 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Boolean removeFilePermanently(Long id) {
-        AbstractFileMetadata fileMetadata = fileRepository.getOne(id);
-        byte[] content = storageService.download(fileMetadata.getUrl());
-        boolean removedFromStorage = storageService.removePermanently(fileMetadata);
-        if(removedFromStorage) {
-            boolean stored = archivedFileMetadataService.store(fileMetadata, content);
-            if (stored) {
-                fileRepository.deleteById(id);
-                return true;
-            }
-            return null;
+    public boolean generateThumbnail(String fileName) {
+        String file = downloadFileBase64(fileName);
+        if (file != null) {
+            String thumb = thumbnailCreatorService.createThumbnailBase64(Base64.getDecoder().decode(file));
+            SAFileMetadata fileMetadata = fileRepository.getByFileName(fileName);
+            fileMetadata.setThumbnail(thumb);
+            fileRepository.save(fileMetadata);
+            return true;
         }
         return false;
+    }
+
+    @Override
+    public Boolean removeFilePermanently(Long id) throws IOException {
+        SAFileMetadata fileMetadata = fileRepository.getOne(id);
+        try {
+            byte[] content = storageService.download(fileMetadata.getUrl());
+            archivedFileMetadataService.store(fileMetadata, content);
+            System.out.println(fileMetadata.getFileName() + " file archive backup created");
+            storageService.removePermanently(fileMetadata);
+            System.out.println(fileMetadata.getFileName() + " removed permanently from storage");
+        } catch (NoSuchFileException e) {
+            System.out.println(e.getMessage() + " " + e.getCause());
+        }
+        scoreService.removePdfFromScore(id);
+        fileRepository.deleteById(id);
+        System.out.println("Metadata of file " + fileMetadata.getFileName() + " removed permanently");
+        return true;
     }
 
     private String generateFileName() {

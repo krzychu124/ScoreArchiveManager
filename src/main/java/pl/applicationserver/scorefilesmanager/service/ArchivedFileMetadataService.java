@@ -1,13 +1,13 @@
 package pl.applicationserver.scorefilesmanager.service;
 
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadataArchive;
+import pl.applicationserver.scorefilesmanager.domain.ArchivedFileMetadata;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 
 import java.util.List;
 
 public interface ArchivedFileMetadataService {
 
-    boolean store(AbstractFileMetadata fileMetadata, byte[] content);
-    AbstractFileMetadataArchive getByFileName(String fileName);
-    List<AbstractFileMetadataArchive> getAll();
+    boolean store(SAFileMetadata fileMetadata, byte[] content);
+    ArchivedFileMetadata getByFileName(String fileName);
+    List<ArchivedFileMetadata> getAll();
 }

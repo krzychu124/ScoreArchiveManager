@@ -17,4 +17,5 @@ public interface ScoreService {
     Score createScore(Score score);
     boolean removeScore(Long scoreId);
     Score updateScore(Long scoreId, Score score);
+    void removePdfFromScore(Long id);
 }

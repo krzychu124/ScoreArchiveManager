@@ -76,12 +76,12 @@ public class ScoreController {
     }
 
     @PostMapping
-    public ResponseEntity<Score> createScore(@RequestBody Score score) {
+    public ResponseEntity createScore(@RequestBody Score score) {
         Score newScore = scoreService.createScore(score);
         if (newScore != null) {
-            return new ResponseEntity<>(newScore, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newScore);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
 

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.applicationserver.scorefilesmanager.domain.*;
 import pl.applicationserver.scorefilesmanager.dto.SimpleFileInfo;
-import pl.applicationserver.scorefilesmanager.repository.AbstractFileRepository;
+import pl.applicationserver.scorefilesmanager.repository.SAFileMetadataRepository;
 import pl.applicationserver.scorefilesmanager.service.*;
 
 import javax.persistence.EntityNotFoundException;
@@ -15,10 +15,10 @@ public class FileMetadataServiceImpl implements FileMetadataService {
     private ScoreTitleService scoreTitleService;
     private InstrumentService instrumentService;
     private ScoreTypeService scoreTypeService;
-    private AbstractFileRepository fileRepository;
+    private SAFileMetadataRepository fileRepository;
 
     @Autowired
-    public FileMetadataServiceImpl(AbstractFileRepository fileRepository, ScoreTitleService scoreTitleService, InstrumentService instrumentService, ScoreTypeService scoreTypeService) {
+    public FileMetadataServiceImpl(SAFileMetadataRepository fileRepository, ScoreTitleService scoreTitleService, InstrumentService instrumentService, ScoreTypeService scoreTypeService) {
         this.fileRepository = fileRepository;
         this.scoreTitleService = scoreTitleService;
         this.instrumentService = instrumentService;
@@ -26,7 +26,7 @@ public class FileMetadataServiceImpl implements FileMetadataService {
     }
 
     @Override
-    public AbstractFileMetadata createFileMetadata(SimpleFileInfo fileInfo, String fileName, Long fileSize, String pathToDownload, String fileExtension) {
+    public SAFileMetadata createFileMetadata(SimpleFileInfo fileInfo, String fileName, Long fileSize, String pathToDownload, String fileExtension) {
         ScoreTitle scoreTitle;
         Instrument instrument;
         ScoreType scoreType;
@@ -39,32 +39,41 @@ public class FileMetadataServiceImpl implements FileMetadataService {
             return null;
         }
         ScoreFileType fileType = fileInfo.getScoreFileType();
-        AbstractFileMetadata fileMetadata = null;
+        SAFileMetadata fileMetadata = null;
         switch (fileInfo.getScoreFileType()) {
             case PDF:
-                fileMetadata = new PdfFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, "pdf", fileType);
+                fileMetadata = new SAFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, "pdf", fileType);
                 break;
             case MSCZ:
-                fileMetadata = new MuseScoreFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, "mscz", fileType);
+                fileMetadata = new SAFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, "mscz", fileType);
                 break;
             case IMAGE:
-                fileMetadata = new ImageFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, fileExtension, fileType);
+                fileMetadata = new SAFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, fileExtension, fileType);
                 break;
             case OTHER:
-                fileMetadata = new OtherFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, fileExtension, fileType);
+                fileMetadata = new SAFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, fileExtension, fileType);
                 break;
         }
-        fileRepository.save(fileMetadata);
-        return fileMetadata;
+        return fileRepository.save(fileMetadata);
     }
 
     @Override
-    public AbstractFileMetadata get(String fileName) {
+    public SAFileMetadata get(String fileName) {
         return fileRepository.getByFileName(fileName);
     }
 
     @Override
-    public List<AbstractFileMetadata> getByType(ScoreFileType fileType) {
+    public List<SAFileMetadata> getByType(ScoreFileType fileType) {
         return fileRepository.getAllByScoreFileType(fileType);
+    }
+
+    @Override
+    public List<SAFileMetadata> getFilesWithoutThumb(ScoreFileType fileType) {
+        return fileRepository.getAllByScoreFileTypeAndThumbnailIsNull(fileType);
+    }
+
+    @Override
+    public List<SAFileMetadata> getAllByInstrument(Long instrumentId) {
+        return fileRepository.getAllByInstrumentId(instrumentId);
     }
 }

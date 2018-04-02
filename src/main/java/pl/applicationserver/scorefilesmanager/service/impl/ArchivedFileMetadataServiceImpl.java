@@ -2,39 +2,38 @@ package pl.applicationserver.scorefilesmanager.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadataArchive;
 import pl.applicationserver.scorefilesmanager.domain.ArchivedFileMetadata;
-import pl.applicationserver.scorefilesmanager.repository.AbstractFileArchiveRepository;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
+import pl.applicationserver.scorefilesmanager.repository.ArchivedFileMetadataRepository;
 import pl.applicationserver.scorefilesmanager.service.ArchivedFileMetadataService;
 
 import java.util.List;
 
 @Service
 public class ArchivedFileMetadataServiceImpl implements ArchivedFileMetadataService {
-    private AbstractFileArchiveRepository abstractFileArchiveRepository;
+    private ArchivedFileMetadataRepository fileArchiveRepository;
 
     @Autowired
-    public ArchivedFileMetadataServiceImpl(AbstractFileArchiveRepository abstractFileArchiveRepository) {
-        this.abstractFileArchiveRepository = abstractFileArchiveRepository;
+    public ArchivedFileMetadataServiceImpl(ArchivedFileMetadataRepository fileMetadataRepository) {
+        this.fileArchiveRepository = fileMetadataRepository;
     }
 
     @Override
-    public boolean store(AbstractFileMetadata fileMetadata, byte[] content) {
-        AbstractFileMetadataArchive a = new ArchivedFileMetadata(fileMetadata);
+    public boolean store(SAFileMetadata fileMetadata, byte[] content) {
+        ArchivedFileMetadata a = new ArchivedFileMetadata(fileMetadata);
         a.setContent(content);
-       AbstractFileMetadataArchive archive = abstractFileArchiveRepository.save(a);
+        ArchivedFileMetadata archive = fileArchiveRepository.save(a);
        return archive.getId() != null;
     }
 
     @Override
-    public AbstractFileMetadataArchive getByFileName(String fileName) {
-        return abstractFileArchiveRepository.getByFileName(fileName);
+    public ArchivedFileMetadata getByFileName(String fileName) {
+        return fileArchiveRepository.getByFileName(fileName);
     }
 
     @Override
-    public List<AbstractFileMetadataArchive> getAll() {
-        return abstractFileArchiveRepository.findAll();
+    public List<ArchivedFileMetadata> getAll() {
+        return fileArchiveRepository.findAll();
     }
 
 

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 import pl.applicationserver.scorefilesmanager.service.StorageService;
 
 import javax.annotation.PostConstruct;
@@ -88,7 +88,7 @@ public class DropboxStorageService implements StorageService{
     }
 
     @Override
-    public boolean removePermanently(AbstractFileMetadata fileMetadata) {
+    public boolean removePermanently(SAFileMetadata fileMetadata) {
         try {
             DeleteResult deleteResult = client.files().deleteV2(fileMetadata.getUrl());
             System.out.println(deleteResult.toString());

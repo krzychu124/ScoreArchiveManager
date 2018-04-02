@@ -1,13 +1,13 @@
 package pl.applicationserver.scorefilesmanager.dto;
 
-import pl.applicationserver.scorefilesmanager.domain.AbstractFileMetadata;
+import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 
 public class DownloadedFile {
 
     private String content;
-    private AbstractFileMetadata fileMetadata;
+    private SAFileMetadata fileMetadata;
 
-    public DownloadedFile(String content, AbstractFileMetadata fileMetadata) {
+    public DownloadedFile(String content, SAFileMetadata fileMetadata) {
         this.content = content;
         this.fileMetadata = fileMetadata;
     }
@@ -20,11 +20,11 @@ public class DownloadedFile {
         this.content = content;
     }
 
-    public AbstractFileMetadata getFileMetadata() {
+    public SAFileMetadata getFileMetadata() {
         return fileMetadata;
     }
 
-    public void setFileMetadata(AbstractFileMetadata fileMetadata) {
+    public void setFileMetadata(SAFileMetadata fileMetadata) {
         this.fileMetadata = fileMetadata;
     }
 }
