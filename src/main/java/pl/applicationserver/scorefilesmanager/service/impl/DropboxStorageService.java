@@ -8,15 +8,15 @@ import com.dropbox.core.v2.files.DeleteResult;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.applicationserver.scorefilesmanager.config.AppEnvConfig;
 import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 import pl.applicationserver.scorefilesmanager.service.StorageService;
 
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,18 +30,11 @@ import java.util.stream.Collectors;
 @PropertySource("classpath:application.properties")
 public class DropboxStorageService implements StorageService{
 //TODO logger
-    @Value("${dbxtoken}")
-    private String ACCESS_TOKEN;
     private DbxClientV2 client;
-    public DropboxStorageService(@Value("${dbxtoken}") String token) {
+    @Autowired
+    public DropboxStorageService(AppEnvConfig appEnvConfig) {
         DbxRequestConfig config = new DbxRequestConfig("ExperimentalScoreArchive");
-        ACCESS_TOKEN = token;
-        client = new DbxClientV2(config, ACCESS_TOKEN);
-    }
-
-    @PostConstruct
-    public void print() {
-        System.out.println(ACCESS_TOKEN);
+        client = new DbxClientV2(config, appEnvConfig.getDropboxToken());
     }
 
     @Override
