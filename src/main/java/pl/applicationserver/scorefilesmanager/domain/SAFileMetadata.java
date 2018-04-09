@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Table(name = "sam_sa_file_metadata")
@@ -35,8 +36,7 @@ public class SAFileMetadata {
     @Enumerated
     private ScoreFileType scoreFileType;
     private String thumbnail;
-
-    private LocalDateTime created;
+    private Timestamp created;
     @NotNull
     private boolean deleted = false;
 
@@ -56,14 +56,14 @@ public class SAFileMetadata {
 
     @PrePersist
     protected void onCreate() {
-        created = LocalDateTime.now();
+        created = Timestamp.from(Instant.now());
     }
 
     public Long getId() {
         return id;
     }
 
-    public LocalDateTime getCreated() {
+    public Timestamp getCreated() {
         return created;
     }
 
@@ -163,7 +163,7 @@ public class SAFileMetadata {
         return metadata.getScoreTitle().getTitle() + metadata.getInstrument().getName() + "." + metadata.getFileExtension();
     }
 
-    public void setCreated(LocalDateTime created) {
+    public void setCreated(Timestamp created) {
         this.created = created;
     }
 }
