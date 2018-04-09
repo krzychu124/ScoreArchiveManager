@@ -25,19 +25,18 @@ public class User implements UserDetails {
     private String name;
     @NotNull
     private String surname;
-    @NotNull
+    @Column(name = "user_name", unique = true, nullable = false)
     private String userName;
     @NotNull
     private String email;
-    @NotNull
-    private String passHash;
-    @NotNull
-    private String passSalt;
-    private boolean isNonExpired;
-    private boolean isNonLocked;
+    private String password;
+    private boolean isNonExpired = true;
+    private boolean isNonLocked = true;
+    private boolean isCredentialsNonExpired = true;
     private boolean isEnabled = true;
     @OneToMany(mappedBy = "id", fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
+
     public User() {
     }
 
@@ -88,7 +87,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passSalt + passHash;
+        return password;
     }
 
     @Override
@@ -108,7 +107,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return isCredentialsNonExpired;
     }
 
     @Override
@@ -116,16 +115,19 @@ public class User implements UserDetails {
         return isEnabled;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public void setHashedPassword(String passHash, String passSalt) {
-        this.passHash = passHash;
-        this.passSalt = passSalt;
-    }
-
     public void disableUser() {
         isEnabled = false;
+    }
+
+    public void enableUser() {
+        isEnabled = true;
     }
 }

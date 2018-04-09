@@ -75,8 +75,8 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     @Transactional
     public Score createScore(Score score) {
-        String userName = (String) authenticationFacade.getAuthentication().getPrincipal();
-        User user = userRepository.getUserByName(userName);
+        User authorizedUser = (User) authenticationFacade.getAuthentication().getPrincipal();
+        User user = userRepository.findOneByUserName(authorizedUser.getUsername());
         if (user != null) {
             user = userRepository.getOne(user.getId());
             score.setInstrument(instrumentRepository.getOne(score.getInstrument().getId()));

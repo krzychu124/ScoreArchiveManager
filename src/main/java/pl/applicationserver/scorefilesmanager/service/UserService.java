@@ -1,7 +1,8 @@
 package pl.applicationserver.scorefilesmanager.service;
 
-import pl.applicationserver.scorefilesmanager.domain.User;
+import pl.applicationserver.scorefilesmanager.dto.NewUser;
 
 public interface UserService {
-    User getUser(Long id);
+
+    boolean registerUser(NewUser newUser);
 }

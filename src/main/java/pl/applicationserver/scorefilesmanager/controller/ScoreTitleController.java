@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/scoreTitle")
+@RequestMapping("/api/scoreTitle")
 public class ScoreTitleController {
     private ScoreTitleService scoreTitleService;
 

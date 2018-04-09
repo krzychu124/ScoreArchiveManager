@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/files")
+@RequestMapping("/api/files")
 public class FilesController {
     private FileService fileService;
     private FileMetadataService fileMetadataService;
@@ -55,7 +55,7 @@ public class FilesController {
             SAFileMetadata fileMetadata = fileMetadataService.get(fileName);
             if (resource != null && fileMetadata != null) {
                 HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS,HttpHeaders.CONTENT_DISPOSITION);
+                headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
                 headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename: " + SAFileMetadata.generateFileName(fileMetadata));
                 return ResponseEntity.ok()
                         .headers(headers)
@@ -67,19 +67,21 @@ public class FilesController {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
     @GetMapping("/archived")
     public ResponseEntity<List<ArchivedFileMetadata>> getAllArchived() {
-        return new ResponseEntity<>(archivedFileMetadataService.getAll(),HttpStatus.OK);
+        return new ResponseEntity<>(archivedFileMetadataService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/archived/file")
     public ResponseEntity<ArchivedFileMetadata> getAllArchivedByName(@RequestParam("fileName") String fileName) {
         ArchivedFileMetadata archivedFile = archivedFileMetadataService.getByFileName(fileName);
-        if(archivedFile != null) {
+        if (archivedFile != null) {
             return new ResponseEntity<>(archivedFile, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @GetMapping("/base64")
     public ResponseEntity<DownloadedFile> downloadBase64(@RequestParam("fileName") String fileName) {
         if (fileName != null) {
@@ -95,7 +97,7 @@ public class FilesController {
     @PutMapping("/{fileName}/thumb")
     public ResponseEntity<Void> generateThumbnail(@PathVariable("fileName") String fileName) {
         boolean generated = fileService.generateThumbnail(fileName);
-        if(generated) {
+        if (generated) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -110,7 +112,7 @@ public class FilesController {
             System.out.println(e.getMessage() + " " + e.getCause());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(deleted != null) {
+        if (deleted != null) {
             if (deleted) {
                 return new ResponseEntity<>(HttpStatus.OK);
             }

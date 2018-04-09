@@ -10,7 +10,7 @@ import pl.applicationserver.scorefilesmanager.service.ScoreBookTitleService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/scoreBookTitle")
+@RequestMapping(value = "/api/scoreBookTitle")
 public class ScoreBookTitleController {
 
     private ScoreBookTitleService bookTitleService;

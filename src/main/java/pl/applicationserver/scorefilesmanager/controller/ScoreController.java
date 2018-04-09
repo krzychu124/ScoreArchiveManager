@@ -12,7 +12,7 @@ import pl.applicationserver.scorefilesmanager.service.ScoreService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/score")
+@RequestMapping(value = "/api/score")
 public class ScoreController {
 
     private ScoreService scoreService;
@@ -36,16 +36,16 @@ public class ScoreController {
 
     @GetMapping(params = {"scoreTypeId"})
     public ResponseEntity<List<Score>> getScoresByScoreType(@RequestParam("scoreTypeId") Long scoreTypeId) {
-            List<Score> score = scoreService.getScoresByScoreType(scoreTypeId);
-            if (score != null) {
-                return new ResponseEntity<>(score, HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List<Score> score = scoreService.getScoresByScoreType(scoreTypeId);
+        if (score != null) {
+            return new ResponseEntity<>(score, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(params = {"scoreType", "scoreTitle"})
-    public ResponseEntity<List<Score>> getScoresByScoreTypeAndTitle(@RequestParam("scoreType") ScoreType scoreType,@RequestParam("scoreTitle") ScoreTitle scoreTitle) {
-        if (scoreType!= null) {
+    public ResponseEntity<List<Score>> getScoresByScoreTypeAndTitle(@RequestParam("scoreType") ScoreType scoreType, @RequestParam("scoreTitle") ScoreTitle scoreTitle) {
+        if (scoreType != null) {
             List<Score> score = scoreService.getScoresByTypeAndTitle(scoreType, scoreTitle);
             if (score != null) {
                 return new ResponseEntity<>(score, HttpStatus.OK);
@@ -54,12 +54,13 @@ public class ScoreController {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    @GetMapping(params = {"instrumentId", "scoreTypeId" })
-    public ResponseEntity<List<Score>> getScoresByScoreTypeAndInstrument(@RequestParam("scoreTypeId") Long scoreTypeId,@RequestParam("instrumentId") Long instrumentId) {
-            List<Score> score = scoreService.getScoresByInstrumentAndTScoreType(instrumentId, scoreTypeId);
-            if (score != null) {
-                return new ResponseEntity<>(score, HttpStatus.OK);
-            }
+
+    @GetMapping(params = {"instrumentId", "scoreTypeId"})
+    public ResponseEntity<List<Score>> getScoresByScoreTypeAndInstrument(@RequestParam("scoreTypeId") Long scoreTypeId, @RequestParam("instrumentId") Long instrumentId) {
+        List<Score> score = scoreService.getScoresByInstrumentAndTScoreType(instrumentId, scoreTypeId);
+        if (score != null) {
+            return new ResponseEntity<>(score, HttpStatus.OK);
+        }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 

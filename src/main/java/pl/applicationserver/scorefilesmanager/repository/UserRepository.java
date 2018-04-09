@@ -6,5 +6,5 @@ import pl.applicationserver.scorefilesmanager.domain.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User getUserByName(String name);
+    User findOneByUserName(String userName);
 }

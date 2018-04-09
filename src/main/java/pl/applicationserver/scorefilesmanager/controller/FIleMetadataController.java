@@ -10,7 +10,7 @@ import pl.applicationserver.scorefilesmanager.service.FileMetadataService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fileMetadata")
+@RequestMapping("/api/fileMetadata")
 public class FIleMetadataController {
     private FileMetadataService fileMetadataService;
 
@@ -20,7 +20,7 @@ public class FIleMetadataController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SAFileMetadata>> getMetadataListByType(@RequestParam("fileType")ScoreFileType fileType) {
+    public ResponseEntity<List<SAFileMetadata>> getMetadataListByType(@RequestParam("fileType") ScoreFileType fileType) {
         return new ResponseEntity<>(fileMetadataService.getByType(fileType), HttpStatus.OK);
     }
 

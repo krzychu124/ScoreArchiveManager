@@ -9,7 +9,7 @@ import pl.applicationserver.scorefilesmanager.service.InstrumentService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/instrument")
+@RequestMapping(value = "/api/instrument")
 public class InstrumentController {
     private InstrumentService instrumentService;
 

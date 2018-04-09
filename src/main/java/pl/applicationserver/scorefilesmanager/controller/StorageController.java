@@ -16,7 +16,7 @@ import pl.applicationserver.scorefilesmanager.service.FileService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/storage")
+@RequestMapping(value = "/api/storage")
 public class StorageController {
     private SAFileMetadataRepository fileRepository;
     private FileService fileService;
@@ -28,27 +28,27 @@ public class StorageController {
     }
 
     @GetMapping("/fileType/")
-    public ResponseEntity<List<SAFileMetadata>>getFilesByFileType(@RequestParam ScoreFileType fileType){
+    public ResponseEntity<List<SAFileMetadata>> getFilesByFileType(@RequestParam ScoreFileType fileType) {
         List<SAFileMetadata> files = fileRepository.getAllByScoreFileType(fileType);
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
 
 
     @GetMapping("/scoreType/")
-    public ResponseEntity<List<SAFileMetadata>>getFilesByScoreType(@RequestParam ScoreType scoreType){
+    public ResponseEntity<List<SAFileMetadata>> getFilesByScoreType(@RequestParam ScoreType scoreType) {
         List<SAFileMetadata> files = fileRepository.getAllByScoreType(scoreType);
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
 
     @GetMapping("/fileList")
-    public ResponseEntity<List<String>> listFiles(@RequestParam("fileType") ScoreFileType fileType){
+    public ResponseEntity<List<String>> listFiles(@RequestParam("fileType") ScoreFileType fileType) {
         List<String> files = fileService.getStorageFileListByFileType(fileType);
-        return new ResponseEntity<>(files,HttpStatus.OK);
+        return new ResponseEntity<>(files, HttpStatus.OK);
     }
 
 
     @GetMapping("/deleted")
-    public ResponseEntity<List<SAFileMetadata>>getDeleted(){
+    public ResponseEntity<List<SAFileMetadata>> getDeleted() {
         List<SAFileMetadata> files = fileRepository.getAllByDeletedNot(false);
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
