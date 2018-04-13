@@ -35,6 +35,7 @@ public class SAFileMetadata {
     @NotNull
     @Enumerated
     private ScoreFileType scoreFileType;
+    @Column(columnDefinition = "text")
     private String thumbnail;
     private Timestamp created;
     @NotNull
