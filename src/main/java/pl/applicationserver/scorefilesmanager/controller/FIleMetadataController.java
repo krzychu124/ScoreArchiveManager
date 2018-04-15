@@ -24,8 +24,27 @@ public class FIleMetadataController {
         return new ResponseEntity<>(fileMetadataService.getByType(fileType), HttpStatus.OK);
     }
 
+    @GetMapping("/orchestra")
+    public ResponseEntity<List<SAFileMetadata>> getMetadataListOrchestraByType(@RequestParam("fileType") ScoreFileType fileType) {
+        return new ResponseEntity<>(fileMetadataService.getByTypeOrchestra(fileType), HttpStatus.OK);
+    }
+    @GetMapping("/band")
+    public ResponseEntity<List<SAFileMetadata>> getMetadataListJBBandByType(@RequestParam("fileType") ScoreFileType fileType) {
+        return new ResponseEntity<>(fileMetadataService.getByTypeJBBand(fileType), HttpStatus.OK);
+    }
+
     @GetMapping("/instrument/{id}")
     public ResponseEntity<List<SAFileMetadata>> getAllByInstrument(@PathVariable("id") Long instrumentId) {
+        List<SAFileMetadata> files = fileMetadataService.getAllByInstrument(instrumentId);
+        return new ResponseEntity<>(files, HttpStatus.OK);
+    }
+    @GetMapping("/instrument/orchestra/{id}")
+    public ResponseEntity<List<SAFileMetadata>> getAllOrchestraByInstrument(@PathVariable("id") Long instrumentId) {
+        List<SAFileMetadata> files = fileMetadataService.getAllByInstrument(instrumentId);
+        return new ResponseEntity<>(files, HttpStatus.OK);
+    }
+    @GetMapping("/instrument/band/{id}")
+    public ResponseEntity<List<SAFileMetadata>> getAllJBBandByInstrument(@PathVariable("id") Long instrumentId) {
         List<SAFileMetadata> files = fileMetadataService.getAllByInstrument(instrumentId);
         return new ResponseEntity<>(files, HttpStatus.OK);
     }

@@ -68,6 +68,16 @@ public class FileMetadataServiceImpl implements FileMetadataService {
     }
 
     @Override
+    public List<SAFileMetadata> getByTypeOrchestra(ScoreFileType fileType) {
+        return fileRepository.getAllByScoreFileType(fileType);
+    }
+
+    @Override
+    public List<SAFileMetadata> getByTypeJBBand(ScoreFileType fileType) {
+        return fileRepository.getAllByScoreFileType(fileType);
+    }
+
+    @Override
     public List<SAFileMetadata> getFilesWithoutThumb(ScoreFileType fileType) {
         return fileRepository.getAllByScoreFileTypeAndThumbnailIsNull(fileType);
     }
