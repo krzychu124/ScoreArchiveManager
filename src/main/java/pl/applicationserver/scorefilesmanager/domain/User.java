@@ -2,15 +2,13 @@ package pl.applicationserver.scorefilesmanager.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.applicationserver.scorefilesmanager.domain.role.GrantedAuthorityImpl;
 import pl.applicationserver.scorefilesmanager.domain.role.Role;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -34,7 +32,13 @@ public class User implements UserDetails {
     private boolean isNonLocked = true;
     private boolean isCredentialsNonExpired = true;
     private boolean isEnabled = true;
-    @OneToMany(mappedBy = "id", fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sam_archive_users_roles",
+            joinColumns = @JoinColumn(
+                    name = "sam_archive_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "sam_role_id", referencedColumnName = "id"))
     private Set<Role> roles = new HashSet<>();
 
     public User() {
@@ -82,7 +86,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role -> new GrantedAuthorityImpl(role.getRole())).collect(Collectors.toList());
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+        roles.forEach(r -> authorityList.add(new SimpleGrantedAuthority(r.getRole())));
+        authorityList.addAll(roles.stream().map(Role::getPrivileges).flatMap(pList -> pList.stream().map(p -> new SimpleGrantedAuthority(p.getName()))).collect(Collectors.toList()));
+        return authorityList;
     }
 
     @Override

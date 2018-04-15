@@ -7,7 +7,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.applicationserver.scorefilesmanager.repository.UserRepository;
 
+import javax.transaction.Transactional;
+
 @Service
+@Transactional(Transactional.TxType.REQUIRED)
 public class AppUserService implements UserDetailsService {
 
     private UserRepository userRepository;
