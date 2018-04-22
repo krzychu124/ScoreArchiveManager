@@ -19,4 +19,9 @@ public class ScoreTypeServiceImpl implements ScoreTypeService {
     public ScoreType getScoreType(Long id) {
         return scoreTypeRepository.getOne(id);
     }
+
+    @Override
+    public boolean exists(Long id) {
+        return scoreTypeRepository.existsById(id);
+    }
 }

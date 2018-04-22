@@ -19,5 +19,7 @@ public interface ScoreTitleService {
 
     ScoreTitle updateTitle(Long id, ScoreTitle scoreTitle);
 
+    ScoreTitle getByName(String name);
+
     boolean exists(Long id);
 }

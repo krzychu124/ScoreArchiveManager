@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.applicationserver.scorefilesmanager.domain.SAFileMetadata;
 import pl.applicationserver.scorefilesmanager.domain.ScoreFileType;
+import pl.applicationserver.scorefilesmanager.dto.SimleSAFileMetadata;
 import pl.applicationserver.scorefilesmanager.service.FileMetadataService;
 
 import java.util.List;
@@ -34,8 +35,8 @@ public class FIleMetadataController {
     }
 
     @GetMapping("/instrument/{id}")
-    public ResponseEntity<List<SAFileMetadata>> getAllByInstrument(@PathVariable("id") Long instrumentId) {
-        List<SAFileMetadata> files = fileMetadataService.getAllByInstrument(instrumentId);
+    public ResponseEntity<List<SimleSAFileMetadata>> getAllByInstrument(@PathVariable("id") Long instrumentId) {
+        List<SimleSAFileMetadata> files = fileMetadataService.getAllSimpleByInstrumentId(instrumentId);
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
     @GetMapping("/instrument/orchestra/{id}")

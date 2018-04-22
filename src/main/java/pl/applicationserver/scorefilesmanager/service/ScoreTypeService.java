@@ -4,4 +4,5 @@ import pl.applicationserver.scorefilesmanager.domain.ScoreType;
 
 public interface ScoreTypeService {
     ScoreType getScoreType(Long id);
+    boolean exists(Long id);
 }

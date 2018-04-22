@@ -3,6 +3,7 @@ package pl.applicationserver.scorefilesmanager.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.applicationserver.scorefilesmanager.domain.*;
+import pl.applicationserver.scorefilesmanager.dto.SimleSAFileMetadata;
 import pl.applicationserver.scorefilesmanager.dto.SimpleFileInfo;
 import pl.applicationserver.scorefilesmanager.repository.SAFileMetadataRepository;
 import pl.applicationserver.scorefilesmanager.service.*;
@@ -16,6 +17,8 @@ public class FileMetadataServiceImpl implements FileMetadataService {
     private InstrumentService instrumentService;
     private ScoreTypeService scoreTypeService;
     private SAFileMetadataRepository fileRepository;
+    private static final String NO_TITLE = "Brak";
+    private static final String MANY_INSTRUMENTS = "Różne";
 
     @Autowired
     public FileMetadataServiceImpl(SAFileMetadataRepository fileRepository, ScoreTitleService scoreTitleService, InstrumentService instrumentService, ScoreTypeService scoreTypeService) {
@@ -31,9 +34,21 @@ public class FileMetadataServiceImpl implements FileMetadataService {
         Instrument instrument;
         ScoreType scoreType;
         try {
-            scoreTitle = scoreTitleService.getTitle(fileInfo.getTitleId());
-            instrument = instrumentService.getInstrument(fileInfo.getInstrumentId());
-            scoreType = scoreTypeService.getScoreType(fileInfo.getScoreTypeId());
+            if (scoreTitleService.exists(fileInfo.getTitleId())) {
+                scoreTitle = scoreTitleService.getTitle(fileInfo.getTitleId());
+            } else {
+                scoreTitle = scoreTitleService.getByName(NO_TITLE);
+            }
+            if(instrumentService.exists(fileInfo.getInstrumentId())) {
+                instrument = instrumentService.getInstrument(fileInfo.getInstrumentId());
+            } else {
+                instrument = instrumentService.getInstrument(MANY_INSTRUMENTS,Byte.parseByte("99"));
+            }
+            if(scoreTypeService.exists(fileInfo.getScoreTypeId())) {
+                scoreType = scoreTypeService.getScoreType(fileInfo.getScoreTypeId());
+            } else {
+                scoreType = scoreTypeService.getScoreType(1L);
+            }
         } catch (EntityNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -85,5 +100,30 @@ public class FileMetadataServiceImpl implements FileMetadataService {
     @Override
     public List<SAFileMetadata> getAllByInstrument(Long instrumentId) {
         return fileRepository.getAllByInstrumentId(instrumentId);
+    }
+
+    @Override
+    public SimleSAFileMetadata getSimpleByFileName(String name) {
+        return fileRepository.getSimpleByFileName(name);
+    }
+
+    @Override
+    public List<SimleSAFileMetadata> getAllSimpleByScoreFileType(ScoreFileType fileType) {
+        return fileRepository.getAllSimpleByScoreFileType(fileType);
+    }
+
+    @Override
+    public List<SimleSAFileMetadata> getAllSimpleByScoreType(ScoreType scoreType) {
+        return fileRepository.getAllSimpleByScoreType(scoreType);
+    }
+
+    @Override
+    public List<SimleSAFileMetadata> getAllSimpleByInstrumentId(Long instrumentId) {
+        return fileRepository.getAllSimpleByInstrumentId(instrumentId);
+    }
+
+    @Override
+    public List<SimleSAFileMetadata> getAllSimpleNotDeleted() {
+        return fileRepository.getAllSimpleNotDeleted();
     }
 }

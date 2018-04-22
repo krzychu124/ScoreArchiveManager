@@ -74,6 +74,11 @@ public class ScoreTitleServiceImpl implements ScoreTitleService {
     }
 
     @Override
+    public ScoreTitle getByName(String name) {
+        return titleRepository.getByTitle(name);
+    }
+
+    @Override
     public boolean exists(Long id) {
         return titleRepository.existsById(id);
     }
