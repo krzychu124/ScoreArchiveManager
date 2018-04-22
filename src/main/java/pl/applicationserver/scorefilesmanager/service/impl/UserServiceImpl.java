@@ -12,7 +12,9 @@ import pl.applicationserver.scorefilesmanager.repository.RolesRepository;
 import pl.applicationserver.scorefilesmanager.repository.UserRepository;
 import pl.applicationserver.scorefilesmanager.service.UserService;
 
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,13 +25,15 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     private RolesRepository rolesRepository;
     private PrivilegeRepository privilegeRepository;
+    private EntityManager entityManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RolesRepository rolesRepository, PrivilegeRepository privilegeRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RolesRepository rolesRepository, PrivilegeRepository privilegeRepository, EntityManager entityManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.rolesRepository = rolesRepository;
         this.privilegeRepository = privilegeRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -90,7 +94,7 @@ public class UserServiceImpl implements UserService {
             Set<Privilege> uniquePrivileges = new HashSet<>();
             uniquePrivileges.addAll(role.getPrivileges());
             uniquePrivileges.addAll(newRole.getPrivileges());
-            role.setPrivileges(new ArrayList<>(uniquePrivileges));
+            role.setPrivileges(new HashSet<>(uniquePrivileges));
             return rolesRepository.save(role);
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,5 +114,12 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional
+    public List getUserRoles() {
+        Query q = entityManager.createNativeQuery("");
+        return userRepository.getAllByRolesNotNull();
     }
 }

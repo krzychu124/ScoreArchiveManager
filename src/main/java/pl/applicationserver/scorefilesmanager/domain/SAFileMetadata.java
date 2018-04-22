@@ -1,11 +1,13 @@
 package pl.applicationserver.scorefilesmanager.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.time.Instant;
 
 @Entity
 @Table(name = "sam_sa_file_metadata")
@@ -37,11 +39,16 @@ public class SAFileMetadata {
     private ScoreFileType scoreFileType;
     @Column(columnDefinition = "text")
     private String thumbnail;
+    @CreatedBy
+    private String createdBy;
+    @LastModifiedBy
+    private String modifiedBy;
+    @CreationTimestamp
     private Timestamp created;
     @NotNull
     private boolean deleted = false;
 
-    public SAFileMetadata(@NotNull String fileName, ScoreTitle scoreTitle, @NotNull ScoreType scoreType, Instrument instrument, @NotNull String url, @NotNull Long fileSize, String fileExtension, ScoreFileType scoreFileType) {
+    public SAFileMetadata(@NotNull String fileName, ScoreTitle scoreTitle, ScoreType scoreType, Instrument instrument, @NotNull String url, @NotNull Long fileSize, String fileExtension, ScoreFileType scoreFileType) {
         this.fileName = fileName;
         this.scoreTitle = scoreTitle;
         this.scoreType = scoreType;
@@ -51,25 +58,35 @@ public class SAFileMetadata {
         this.fileExtension = fileExtension;
         this.scoreFileType = scoreFileType;
     }
-
     protected SAFileMetadata() {
     }
 
-    @PrePersist
-    protected void onCreate() {
-        created = Timestamp.from(Instant.now());
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Long getId() {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Timestamp getCreated() {
         return created;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCreated(Timestamp created) {
+        this.created = created;
     }
 
     public String getThumbnail() {
@@ -164,7 +181,7 @@ public class SAFileMetadata {
         return metadata.getScoreTitle().getTitle() + metadata.getInstrument().getName() + "." + metadata.getFileExtension();
     }
 
-    public void setCreated(Timestamp created) {
-        this.created = created;
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 }

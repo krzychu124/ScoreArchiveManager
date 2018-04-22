@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.applicationserver.scorefilesmanager.domain.role.Privilege;
 import pl.applicationserver.scorefilesmanager.domain.role.Role;
+import pl.applicationserver.scorefilesmanager.domain.view.UserRoleView;
 import pl.applicationserver.scorefilesmanager.dto.NewUser;
 import pl.applicationserver.scorefilesmanager.service.UserService;
 
@@ -73,5 +74,10 @@ public class UserController {
             return new ResponseEntity<>(OK);
         }
         return new ResponseEntity<>(BAD_REQUEST);
+    }
+
+    @GetMapping("/userRoles")
+    public ResponseEntity<List<UserRoleView>> getUserRoles(){
+        return new ResponseEntity<>(userService.getUserRoles(),OK);
     }
 }

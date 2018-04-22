@@ -2,8 +2,8 @@ package pl.applicationserver.scorefilesmanager.domain.role;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "sam_role")
@@ -21,7 +21,7 @@ public class Role implements Serializable{
                     name = "sam_role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(
                     name = "sam_privilege_id", referencedColumnName = "id"))
-    private List<Privilege> privileges = new ArrayList<>();
+    private Set<Privilege> privileges = new HashSet<>();
 
     public Role() {
 
@@ -42,11 +42,11 @@ public class Role implements Serializable{
         this.role = role;
     }
 
-    public List<Privilege> getPrivileges() {
+    public Set<Privilege> getPrivileges() {
         return privileges;
     }
 
-    public void setPrivileges(List<Privilege> privileges) {
+    public void setPrivileges(Set<Privilege> privileges) {
         this.privileges = privileges;
     }
 }

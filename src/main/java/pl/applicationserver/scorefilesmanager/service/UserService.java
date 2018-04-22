@@ -16,4 +16,5 @@ public interface UserService {
     Role updateRole(Long roleId, Role newRole);
     boolean deleteRole(String roleName);
     boolean deletePrivilege(Long privilegeId);
+    List getUserRoles();
 }
