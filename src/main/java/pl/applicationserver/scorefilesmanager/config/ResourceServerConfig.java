@@ -50,7 +50,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .authenticationProvider(getAuthenticationProvider())
                 .authorizeRequests()
-                .mvcMatchers("/user/register/","/register/").permitAll()
+                .mvcMatchers("/user/register/","/register/", "/oauth/token").permitAll()
                 .mvcMatchers("/user/me").authenticated()
                 .mvcMatchers("/oauth/revoke-token").authenticated()//log off
 
@@ -60,6 +60,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .mvcMatchers(HttpMethod.GET,"/api/scoreTitle").authenticated()
                 .mvcMatchers(HttpMethod.GET,"/api/scoreBookTitle").authenticated()
                 .mvcMatchers(HttpMethod.GET,"/api/score/types").authenticated()
+                .mvcMatchers(HttpMethod.GET,"/api/jobs/types").authenticated()
+                .mvcMatchers(HttpMethod.GET,"/api/jobs/statuses").authenticated()
 
                 .mvcMatchers(HttpMethod.POST,"/api/instrument").hasRole("EDITOR")
                 .mvcMatchers(HttpMethod.PUT,"/api/instrument").hasRole("EDITOR")
@@ -85,6 +87,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .mvcMatchers(HttpMethod.GET,"/api/files/base64").hasAuthority("file_read")
                 .mvcMatchers(HttpMethod.DELETE,"/api/files/").hasAnyRole("MODERATOR", "ADMIN")
                 .mvcMatchers(HttpMethod.DELETE,"/api/files/fileName/**").hasAnyRole("EDITOR", "ADMIN", "MODERATOR")
+
+                .mvcMatchers(HttpMethod.GET,"/api/jobs/**").hasAuthority("job_read")
+                .mvcMatchers(HttpMethod.POST,"/api/jobs/**").hasAuthority("job_edit")
+                .mvcMatchers(HttpMethod.PUT,"/api/jobs/**").hasAuthority("job_edit")
+                .mvcMatchers(HttpMethod.DELETE,"/api/jobs/**").hasAuthority("job_delete")
 
                 .mvcMatchers(HttpMethod.POST,"/user/roles/**").hasRole("ADMIN")
                 .mvcMatchers(HttpMethod.PUT,"/user/roles/**").hasRole("ADMIN")
