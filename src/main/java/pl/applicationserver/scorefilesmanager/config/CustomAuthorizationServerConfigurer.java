@@ -1,8 +1,10 @@
 package pl.applicationserver.scorefilesmanager.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -30,11 +32,13 @@ public class CustomAuthorizationServerConfigurer extends AuthorizationServerConf
     private TokenStore tokenStore;
 
     private AuthenticationManager authenticationManager;
+    private UserDetailsService userDetailsService;
 
     @Autowired
-    public CustomAuthorizationServerConfigurer(DataSource dataSource, AuthenticationManager authenticationManager) {
+    public CustomAuthorizationServerConfigurer(DataSource dataSource, AuthenticationManager authenticationManager,@Qualifier(value = "appUserService") UserDetailsService userDetailsService) {
         this.tokenStore = new JdbcTokenStore(dataSource);
         this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -53,6 +57,6 @@ public class CustomAuthorizationServerConfigurer extends AuthorizationServerConf
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore)
-                .authenticationManager(authenticationManager);
+                .authenticationManager(authenticationManager).userDetailsService(userDetailsService);
     }
 }
