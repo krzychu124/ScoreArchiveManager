@@ -29,7 +29,7 @@ public class FileMetadataServiceImpl implements FileMetadataService {
     }
 
     @Override
-    public SAFileMetadata createFileMetadata(SimpleFileInfo fileInfo, String fileName, Long fileSize, String pathToDownload, String fileExtension) {
+    public SAFileMetadata createFileMetadata(SimpleFileInfo fileInfo, String fileName, String originalFileName, Long fileSize, String pathToDownload, String fileExtension) {
         ScoreTitle scoreTitle;
         Instrument instrument;
         ScoreType scoreType;
@@ -57,16 +57,16 @@ public class FileMetadataServiceImpl implements FileMetadataService {
         SAFileMetadata fileMetadata = null;
         switch (fileInfo.getScoreFileType()) {
             case PDF:
-                fileMetadata = new SAFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, "pdf", fileType);
+                fileMetadata = new SAFileMetadata(fileName, originalFileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, "pdf", fileType);
                 break;
             case MSCZ:
-                fileMetadata = new SAFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, "mscz", fileType);
+                fileMetadata = new SAFileMetadata(fileName, originalFileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, "mscz", fileType);
                 break;
             case IMAGE:
-                fileMetadata = new SAFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, fileExtension, fileType);
+                fileMetadata = new SAFileMetadata(fileName, originalFileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, fileExtension, fileType);
                 break;
             case OTHER:
-                fileMetadata = new SAFileMetadata(fileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, fileExtension, fileType);
+                fileMetadata = new SAFileMetadata(fileName, originalFileName, scoreTitle, scoreType, instrument, pathToDownload, fileSize, fileExtension, fileType);
                 break;
         }
         return fileRepository.save(fileMetadata);

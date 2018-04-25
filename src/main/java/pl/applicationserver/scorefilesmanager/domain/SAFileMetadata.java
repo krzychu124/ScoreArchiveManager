@@ -19,6 +19,7 @@ public class SAFileMetadata {
     private Long id;
     @NotNull
     private String fileName;
+    private String originalFileName;
     @NotNull
     @ManyToOne
     private ScoreTitle scoreTitle;
@@ -47,9 +48,9 @@ public class SAFileMetadata {
     private Timestamp created;
     @NotNull
     private boolean deleted = false;
-
-    public SAFileMetadata(@NotNull String fileName, ScoreTitle scoreTitle, ScoreType scoreType, Instrument instrument, @NotNull String url, @NotNull Long fileSize, String fileExtension, ScoreFileType scoreFileType) {
+    public SAFileMetadata(@NotNull String fileName, String originalFileName, ScoreTitle scoreTitle, ScoreType scoreType, Instrument instrument, @NotNull String url, @NotNull Long fileSize, String fileExtension, ScoreFileType scoreFileType) {
         this.fileName = fileName;
+        this.originalFileName = originalFileName;
         this.scoreTitle = scoreTitle;
         this.scoreType = scoreType;
         this.instrument = instrument;
@@ -58,19 +59,32 @@ public class SAFileMetadata {
         this.fileExtension = fileExtension;
         this.scoreFileType = scoreFileType;
     }
+
     protected SAFileMetadata() {
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public void setOriginalFileName(String oryginalFileName) {
+        this.originalFileName = oryginalFileName;
     }
 
     public String getCreatedBy() {
         return createdBy;
     }
 
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public String getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 
     public Long getId() {
@@ -178,10 +192,6 @@ public class SAFileMetadata {
     }
 
     public static String generateFileName(SAFileMetadata metadata) {
-        return metadata.getScoreTitle().getTitle() + metadata.getInstrument().getName() + "." + metadata.getFileExtension();
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
+        return metadata.getScoreTitle().getTitle() + "_" + metadata.getOriginalFileName() + "." + metadata.getFileExtension();
     }
 }

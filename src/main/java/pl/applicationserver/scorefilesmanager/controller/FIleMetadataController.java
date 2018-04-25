@@ -39,6 +39,13 @@ public class FIleMetadataController {
         List<SimleSAFileMetadata> files = fileMetadataService.getAllSimpleByInstrumentId(instrumentId);
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
+
+    @GetMapping("/instrument/withPreview/{id}")
+    public ResponseEntity<List<SAFileMetadata>> getAllWithPreviewByInstrument(@PathVariable("id") Long instrumentId) {
+        List<SAFileMetadata> files = fileMetadataService.getAllByInstrument(instrumentId);
+        return new ResponseEntity<>(files, HttpStatus.OK);
+    }
+
     @GetMapping("/instrument/orchestra/{id}")
     public ResponseEntity<List<SAFileMetadata>> getAllOrchestraByInstrument(@PathVariable("id") Long instrumentId) {
         List<SAFileMetadata> files = fileMetadataService.getAllByInstrument(instrumentId);

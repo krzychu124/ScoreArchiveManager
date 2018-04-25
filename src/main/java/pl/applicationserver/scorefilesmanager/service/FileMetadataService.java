@@ -9,7 +9,7 @@ import pl.applicationserver.scorefilesmanager.dto.SimpleFileInfo;
 import java.util.List;
 
 public interface FileMetadataService {
-    SAFileMetadata createFileMetadata(SimpleFileInfo fileInfo, String fileName, Long fileSize, String pathToDownload, String fileExtension);
+    SAFileMetadata createFileMetadata(SimpleFileInfo fileInfo, String originalFileName, String fileName, Long fileSize, String pathToDownload, String fileExtension);
 
     SAFileMetadata get(String fileName);
 

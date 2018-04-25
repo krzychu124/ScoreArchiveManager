@@ -8,6 +8,7 @@ import pl.applicationserver.scorefilesmanager.domain.ScoreType;
 public interface SimleSAFileMetadata {
     Long getId();
     String getFileName();
+    String getOriginalFileName();
     ScoreTitle getScoreTitle();
     Instrument getInstrument();
     Long getScoreId();

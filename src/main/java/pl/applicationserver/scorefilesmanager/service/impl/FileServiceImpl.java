@@ -45,7 +45,8 @@ public class FileServiceImpl implements FileService {
         String pathToDownload = storageService.upload(file, filePath);
         String[] fileNameSplit = file.getOriginalFilename().split("\\.");
         String fileExtension = fileNameSplit[fileNameSplit.length - 1];
-        return fileMetadataService.createFileMetadata(fileInfo, generateFileName, file.getSize(), pathToDownload, fileExtension);
+        String originalFileName = fileNameSplit[fileNameSplit.length -2];
+        return fileMetadataService.createFileMetadata(fileInfo, generateFileName, originalFileName, file.getSize(), pathToDownload, fileExtension);
     }
 
     @Override

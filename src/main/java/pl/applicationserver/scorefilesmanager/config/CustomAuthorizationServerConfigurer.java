@@ -26,8 +26,8 @@ public class CustomAuthorizationServerConfigurer extends AuthorizationServerConf
     private static final String SCOPE_READ = "read";
     private static final String SCOPE_WRITE = "write";
     private static final String TRUST = "trust";
-    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 60 * 60;
-    private static final int FEFRESH_TOKEN_VALIDITY_SECONDS = 6 * 60 * 60;
+    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 60* 60;
+    private static final int REFRESH_TOKEN_VALIDITY_SECONDS = 6 * 60 * 60;
 
     private TokenStore tokenStore;
 
@@ -50,7 +50,7 @@ public class CustomAuthorizationServerConfigurer extends AuthorizationServerConf
                 .authorizedGrantTypes(GRANT_TYPE_PASSWORD, AUTHORIZATION_CODE, REFRESH_TOKEN, IMPLICIT)
                 .scopes(SCOPE_READ, SCOPE_WRITE, TRUST)
                 .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
-                .refreshTokenValiditySeconds(FEFRESH_TOKEN_VALIDITY_SECONDS)
+                .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS)
                 .autoApprove(true);
     }
 
