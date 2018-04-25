@@ -3,6 +3,8 @@ package pl.applicationserver.scorefilesmanager.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.applicationserver.scorefilesmanager.domain.role.Privilege;
 import pl.applicationserver.scorefilesmanager.domain.role.Role;
@@ -11,11 +13,10 @@ import pl.applicationserver.scorefilesmanager.dto.NewUser;
 import pl.applicationserver.scorefilesmanager.service.UserService;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/user")
@@ -37,9 +38,9 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/me")
-    public Principal getUser(Principal user) {
-        return user;
+    @GetMapping("/myPrivileges")
+    public Collection<GrantedAuthority> getPrivileges(Principal user) {
+        return ((OAuth2Authentication)user).getAuthorities();
     }
 
     @GetMapping("/privileges")
